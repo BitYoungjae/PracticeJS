@@ -10,6 +10,7 @@
 
 <body>
     <script>
+        
         const curry = f => (h, ...args) => args.length ? f(h, ...args) : (...args) => f(h, ...args);
 
         const makeRandomImage = (min = 500, max = 600, heightRatio = 0.8) => {
@@ -78,17 +79,21 @@
         };
 
         const go = (...routine) => reduce((acc, now) => now(acc), routine);
+        const pipe = (first, ...routine) => (...args) => go(first(...args), ...routine);
 
         const imgs = makeRandomImageArray(5);
-        const imgElements = map(v => imageLoad(v), imgs);
 
         const getTotalHeight = (imgs) => go(
-            imgElements,
+            imgs,
+            smap(img => imageLoad(img)),
             smap(img => img.height),
             reduceAsync((acc, now) => acc + now)
         );
 
-        getTotalHeight(imgs).then(v => console.log(v)).catch(e => console.log(e))
+        getTotalHeight(imgs)
+        .then(v => console.log(`총 높이 : ${v}`))
+        .catch(e => console.log(e))
+
     </script>
 </body>
 
