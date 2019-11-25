@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>유인동님 FEConf2019 비동기 에러핸들링 복기</title>
+</head>
+
+<body>
+    <script>
+        const curry = f => (h, ...args) => args.length ? f(h, ...args) : (...args) => f(h, ...args);
+
+        const makeRandomImage = (min = 500, max = 600, heightRatio = 0.8) => {
+            const randWidth = Math.round(min + (Math.random() * (max - min)));
+            const randHeight = Math.round(randWidth * heightRatio);
+
+            return {
+                url: `http://placeimg.com/${randWidth}/${randHeight}/any`
+            };
+        };
+
+        const makeRandomImageArray = (n) => Array(n).fill(null).map(() => makeRandomImage())
+
+        const imageLoad = ({
+            url
+        }) => new Promise(
+            (resolve, reject) => {
+                const img = document.createElement("img");
+                img.src = url;
+
+                img.onload = () => resolve(img);
+                img.onerror = () => reject(new Error("이미지로드 실패 :" + img.src));
+            }
+        );
+
+        function* map(f, iter) {
+            for (const one of iter) {
+                yield one instanceof Promise ? one.then(f) : f(one);
+            }
+        }
+
+        const smap = curry(map);
+
+        const reduceAsync = curry(async (f, iter, start) => {
+            let acc = null;
+            let iterator = iter[Symbol.iterator]();
+
+            if (start) {
+                acc = start;
+            } else {
+                acc = await iterator.next().value;
+            }
+
+            for await (const one of iterator) {
+                acc = f(acc, one);
+            }
+
+            return acc;
+        });
+
+        const reduce = (f, iter, start) => {
+            let iterator = iter[Symbol.iterator]();
+            let acc = null;
+
+            if (start) {
+                acc = start;
+            } else {
+                acc = iterator.next().value;
+            }
+
+            for (const one of iterator) {
+                acc = f(acc, one);
+            }
+
+            return acc;
+        };
+
+        const go = (...routine) => reduce((acc, now) => now(acc), routine);
+
+        const imgs = makeRandomImageArray(5);
+        const imgElements = map(v => imageLoad(v), imgs);
+
+        const getTotalHeight = (imgs) => go(
+            imgElements,
+            smap(img => img.height),
+            reduceAsync((acc, now) => acc + now)
+        );
+
+        getTotalHeight(imgs).then(v => console.log(v)).catch(e => console.log(e))
+    </script>
+</body>
+
+</html>
