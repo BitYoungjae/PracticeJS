@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>제너레이터로 지연평가되는 flat 함수</title>
+</head>
+
+<body>
+    <script>
+        const makeRandomNastedArray = (n) => {
+            const origin = Array(n).fill(0).map(() => --n).reverse();
+            const result = [];
+            let pointerForward = result;
+            let pointer = result;
+
+            for (const one of origin) {
+                const direction = Math.round(Math.random() * 3);
+
+                if (direction === 1) {
+                    pointer = pointerForward;
+                } else if (direction === 2) {
+                    pointer = [];
+                    pointerForward.push(pointer);
+                    pointerForward = pointer;
+                }
+
+                pointer.push(one)
+            }
+
+            return result;
+        };
+
+        const isIterable = iter => iter[Symbol.iterator];
+
+        const L = {};
+
+        L.flat = function* f(iter) {
+            for (const one of iter) {
+                if (isIterable(one)) {
+                    yield* f(one);
+                } else {
+                    yield one;
+                }
+            }
+        }
+
+        const complexArr = makeRandomNastedArray(100);
+        
+        console.log(complexArr);
+        console.log(...L.flat(complexArr));
+    </script>
+</body>
+
+</html>
