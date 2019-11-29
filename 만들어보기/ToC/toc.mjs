@@ -111,4 +111,9 @@ const createTOC = pipe(
     convertHeadingElementChainToListElement
 );
 
-export { createTOC };
+const createTOCObject = pipe(
+    getHeadingElementsList,
+    getHeadingElementsChain
+);
+
+export { createTOC, createTOCObject };

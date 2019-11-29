@@ -31,9 +31,12 @@ import { createTOC } from "./toc.mjs";
 }
 
 const main = () => {
+    // content : 탐색할 대상이 되는 컨텐츠 영역
     const content = document.getElementsByClassName("content")[0];
-    const toc = document.getElementsByClassName("toc")[0];
+    // content 영역 내의 머릿글 요소들을 분석해 UL 요소를 생성한다.
     const toclist = createTOC(content);
+
+    const toc = document.getElementsByClassName("toc")[0];
     toc.appendChild(toclist);
 }
 
