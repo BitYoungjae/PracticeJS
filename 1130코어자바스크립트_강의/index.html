@@ -126,30 +126,35 @@
             전달된 함수를 다른 함수가 매개변수로 받아 보관하다가 용무가 있을 때 실행한다.
             */
 
-            const arr = [1,2,3,4,5];
+            const arr = [1, 2, 3, 4, 5];
             const entries = [];
 
-            arr.forEach(function (v, i) {
-                console.log(v, i, this[i]);
-            }, [10, 20, 30, 40, 50]);
             /* 
             forEach를 포함한 map filter 등 일부 배열 내장 메서드들은
             optional한 매개변수로 thisArg를 받는다.
             역시 화살표 함수의 경우 적용이 되지 않는다.
             */
+            arr.forEach(function (v, i) {
+                console.log(v, i, this[i]);
+            }, [10, 20, 30, 40, 50]); // <- [10, 20, 30, ...]는 thisArg로 전달된 인자이다.
 
             const obj = {
-                val: [5,6,7,8,9],
+                val: [5, 6, 7, 8, 9],
                 printValues: function (v, i) {
                     console.log(this["val"], v); // this["val"] 는 모두 undefined로 평가된다.
                 }
             };
 
             arr.forEach(obj.printValues); // obj.printValues는 메서드로써 전달되지 않는다. printValues라는 함수로써 전달될 뿐.
-        }
-        {
+        } {
             // CLOSURE
-            // 함수와 선언될 당시의 렉시컬 환경이 결합된 것이다.
+            /*
+            클로저란, 함수와 선언될 당시의 렉시컬 환경이 결합된 것이다.
+
+            함수 선언문이나 표현식이 자바스크립트 엔진에 의해 해석될 때.
+            각각의 함수들은 ECMASCRIPT 사양상의 내부 객체인 [[Environment]] 를 생성한다.
+            [[Environment]] 는 각 함수가 해석될 당시의 외부 렉시컬 환경을 참조한다.
+            */
             {
                 let a = 333;
 
@@ -157,7 +162,7 @@
                     console.log(a);
                 }
 
-                closureFunc();
+                closureFunc(); // 333
             }
 
             {
