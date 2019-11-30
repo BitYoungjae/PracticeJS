@@ -104,6 +104,7 @@
             { // 잡다한 스타일 설정
                 divStyle.width = "100px";
                 divStyle.height = "100px";
+                divStyle.color = "white";
                 divStyle.backgroundColor = "tomato";
 
                 divStyle.display = "flex";
@@ -136,6 +137,56 @@
             optional한 매개변수로 thisArg를 받는다.
             역시 화살표 함수의 경우 적용이 되지 않는다.
             */
+
+            const obj = {
+                val: [5,6,7,8,9],
+                printValues: function (v, i) {
+                    console.log(this["val"], v); // this["val"] 는 모두 undefined로 평가된다.
+                }
+            };
+
+            arr.forEach(obj.printValues); // obj.printValues는 메서드로써 전달되지 않는다. printValues라는 함수로써 전달될 뿐.
+        }
+        {
+            // CLOSURE
+            // 함수와 선언될 당시의 렉시컬 환경이 결합된 것이다.
+            {
+                let a = 333;
+
+                const closureFunc = () => {
+                    console.log(a);
+                }
+
+                closureFunc();
+            }
+
+            {
+                /*
+                outerFunc의 경우 호출시마다 새로운 Lexical Environment를 생성한다.
+                그리고 그로 인해 반환되는 새로운 함수는 내부에서 outerLexicalEnvironment로 
+                outerFunc 호출시 생성된 Lexical Environment를 참조한다.
+                */
+                const outerFunc = () => {
+                    let b = 1;
+
+                    return () => {
+                        console.log(b++);
+                    };
+                };
+
+                outerFunc()(); // 1
+                const returnedFunc = outerFunc();
+
+                /* 
+                outerFunc의 실행문맥이 콜스택에서 제거되었음에도 불구하고,
+                렉시컬 환경은 반환되는 내부 함수의 참조로 인해 그대로 유지된다.
+                자바스크립트 엔진의 최적화에 의해 직접 참조하는 식별자 외의 것은 가비지컬렉터의 수집 대상이 된다.
+                */
+                returnedFunc(); // 1
+                returnedFunc(); // 2
+                returnedFunc(); // 3
+                returnedFunc(); // 4
+            }
         }
     </script>
 </body>
