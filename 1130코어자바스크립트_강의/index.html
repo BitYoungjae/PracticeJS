@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>191130 코어 자바스크립트 저자직강</title>
 </head>
+
 <body>
     <script>
-       {
-           // DATA TYPE
-           /* 식별자와 데이터의 저장을 별개로 한다.
-            식별자에 특정 값을 할당시,
-            원시형 데이터의 경우 실제 데이터가 저장된 메모리 주소를 식별자명과 함께 기록한다.
-            참조형 데이터의 경우 참조형 데이터의 멤버들의 주소목록이 저장된다.
-            */
+        {
+            // DATA TYPE
+            /* 식별자와 데이터의 저장을 별개로 한다.
+             식별자에 특정 값을 할당시,
+             원시형 데이터의 경우 실제 데이터가 저장된 메모리 주소를 식별자명과 함께 기록한다.
+             참조형 데이터의 경우 참조형 데이터의 멤버들의 주소목록이 저장된다.
+             */
 
             // 실행문맥
             /*
@@ -54,34 +56,47 @@
                 function 선언이나 표현식의 경우에 인자로 전달된 객체를 this로 binding 한다.
             */
 
+            // 메소드 호출의 예
             const a = {
                 b: {
-                    c () {
+                    c() {
                         console.log(this);
                     },
                     e: () => {
                         console.log(this);
                     }
                 },
-                d () {
+                d() {
                     console.log(this);
                 }
             };
 
             const b = a.b;
-            
-            console.log(
-                a.b.c(), // b 객체를 this로 binding
-                b.c(), // 상동
-                a.d(), // a 객체를 this로 binding
-                b.e() // 화살표 함수는 this binding을 하지 않는다. 즉 전역객체가 출력.
-            );
 
-            console.log(
-                (a.b.c.bind(a))(), // bind는 인자로 받은 객체를 this로 binding한 함수를 반환한다.
-                a.d.call(a.b), // 인자로 받은 객체를 this로 binding 하여 호출한다. apply와의 차이점은 this 외의 인자를 배열로 받고 안 받고의 차이일 뿐이다.
-            );
-       } 
+            a.b.c(); // b 객체를 this로 binding
+            b.c(); // 상동
+            a.d(); // a 객체를 this로 binding
+            b.e(); // 화살표 함수는 this binding을 하지 않는다. 즉 전역객체가 출력.
+
+            (a.b.c.bind(a))(); // bind는 인자로 받은 객체를 this로 binding한 함수를 반환한다.
+            a.d.call(a.b); // 인자로 받은 객체를 this로 binding 하여 호출한다. apply와의 차이점은 this 외의 인자를 배열로 받고 안 받고의 차이일 뿐이다.
+
+
+            // 콜백 호출의 예
+            const callback = function () {
+                console.log(this);
+            };
+
+            const obj = {
+                b(cb) {
+                    cb(); // 함수로써의 호출과 다름이 없음을 주목하자.
+                    cb.call(this); // 이 경우 obj를 출력하게 된다.
+                }
+            };
+
+            obj.b(callback); // 전역객체를 출력한다. 
+        }
     </script>
 </body>
+
 </html>
