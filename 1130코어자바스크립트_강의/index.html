@@ -95,6 +95,21 @@
             };
 
             obj.b(callback); // 전역객체를 출력한다. 
+
+            // 이벤트 호출시
+            // 화면의 빨간 상자를 클릭해보라.
+            const div = document.createElement("div");
+            const divStyle = div.style;
+            
+            divStyle.width = "100px";
+            divStyle.height = "100px";
+            divStyle.backgroundColor = "tomato";
+            div.textContent = "Click me!";
+
+            document.body.appendChild(div);
+            div.addEventListener('click', function () {
+                console.log(this); // 클릭시 div element가 출력된다. currentTarget과 같다.
+            });
         }
     </script>
 </body>
