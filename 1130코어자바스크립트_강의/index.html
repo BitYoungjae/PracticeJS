@@ -15,14 +15,18 @@
             19년 11월 30일 코어 자바스크립트 저자 강의
             강의에 언급된 엣지 케이스들 외 주석들은 거의 대부분 본인 개인적인 지식과 생각에서 작성된 내용이다.
             */
-        } {
+        } 
+        
+        {
             // DATA TYPE
             /* 식별자와 데이터의 저장을 별개로 한다.
              식별자에 특정 값을 할당시,
              원시형 데이터의 경우 실제 데이터가 저장된 메모리 주소를 식별자명과 함께 기록한다.
              참조형 데이터의 경우 참조형 데이터의 멤버들의 주소목록이 저장된다.
              */
-        } {
+        } 
+        
+        {
             // 실행문맥과 렉시컬 환경
             /*
             나의 사견 : 
@@ -46,7 +50,9 @@
             현재는 엔드포인트의 개발자에게 있어서 추상적인 개념일 뿐이므로
             개괄적으로만 코드의 흐름을 읽을 수 있을 정도로 익혀두는 것이 중요하다.
             */
-        } {
+        } 
+        
+        {
             // THIS
             /*
             THIS BINDING CASE들
@@ -124,7 +130,9 @@
             div.addEventListener('click', function () {
                 console.log(this); // 클릭시 div element가 출력된다. currentTarget과 같다.
             });
-        } {
+        } 
+        
+        {
             // Callback Function
             /*
             JAVASCRIPT 의 함수가 일급객체이기 때문에 가능한 개발 방법이다.
@@ -151,7 +159,9 @@
             };
 
             arr.forEach(obj.printValues); // obj.printValues는 메서드로써 전달되지 않는다. printValues라는 함수로써 전달될 뿐.
-        } {
+        } 
+        
+        {
             // CLOSURE
             /*
             클로저란, 함수와 선언될 당시의 렉시컬 환경이 결합된 것이다.
@@ -218,7 +228,9 @@
                 a().a(); // 1이 출력된다
                 a().b(); // 3이 출력된다
             }
-        } {
+        }
+
+        {
             // PROTOTYPE
             /*
             자바스크립트에서는 객체의 상속을 프로토타입을 통해 구현한다.
@@ -226,8 +238,7 @@
             */
 
             {
-                // 프로토타입을 통한 상속구현
-
+                // 프로토타입은 어떤 객체의 정체성을 나타낸다.
                 function A(name) {
                     this.name = name;
                 }
@@ -277,12 +288,55 @@
                     Object.setPrototypeOf(arrLike, Array.prototype);
 
                     console.log(
-                        arrLike.map(v => v*v)
+                        arrLike.map(v => v * v)
                     );
 
                     // 이제부터 arrLike는 완벽한 배열이 되었다.
+                    console.dir(arrLike); // Array(3)
                     console.log(arrLike); // [1, 2, 3] 출력
                 }
+                
+                {
+                    // CLASS 문법을 사용할 경우 내부에 선언된 메서드들은 자동으로 prototype에 할당된다.
+                    class A {
+                        constructor(name) {
+                            this.name = name;
+                        }
+                        hello() {
+                            console.log(this.name);
+                        }
+                    }
+
+                    const obj = new A("Joo");
+
+                    console.log(
+                        Object.getPrototypeOf(obj).hello
+                    );
+
+                    /*
+                    Class를 단순히 function 생성자의 문법 설탕이라고 보는 경우가 있으나,
+                    미묘한 차이를 갖는다.
+
+                    대표적으로 class의 경우 prototype에 대해 직접 생성한 객체로 할당할 수 없다.
+                    */
+
+                    A.prototype = {
+                        bye() {
+                            console.log("bye", this.name);
+                        }
+                    };
+
+                    const obj2 = new A();
+
+                    console.log(
+                        Object.getPrototypeOf(obj2).bye // undefined 출력
+                    );
+                }
+            }
+
+            {
+                // PROTOTYPE CHAIN과 상속
+
             }
         }
     </script>
