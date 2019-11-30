@@ -69,12 +69,18 @@
             };
 
             const b = a.b;
+            
             console.log(
                 a.b.c(), // b 객체를 this로 binding
                 b.c(), // 상동
                 a.d(), // a 객체를 this로 binding
                 b.e() // 화살표 함수는 this binding을 하지 않는다. 즉 전역객체가 출력.
-            )
+            );
+
+            console.log(
+                (a.b.c.bind(a))(), // bind는 인자로 받은 객체를 this로 binding한 함수를 반환한다.
+                a.d.call(a.b), // 인자로 받은 객체를 this로 binding 하여 호출한다. apply와의 차이점은 this 외의 인자를 배열로 받고 안 받고의 차이일 뿐이다.
+            );
        } 
     </script>
 </body>
