@@ -54,6 +54,27 @@
                 function 선언이나 표현식의 경우에 인자로 전달된 객체를 this로 binding 한다.
             */
 
+            const a = {
+                b: {
+                    c () {
+                        console.log(this);
+                    },
+                    e: () => {
+                        console.log(this);
+                    }
+                },
+                d () {
+                    console.log(this);
+                }
+            };
+
+            const b = a.b;
+            console.log(
+                a.b.c(), // b 객체를 this로 binding
+                b.c(), // 상동
+                a.d(), // a 객체를 this로 binding
+                b.e() // 화살표 함수는 this binding을 하지 않는다. 즉 전역객체가 출력.
+            )
        } 
     </script>
 </body>
