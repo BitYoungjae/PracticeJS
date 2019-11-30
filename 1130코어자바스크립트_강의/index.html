@@ -15,8 +15,8 @@
             19년 11월 30일 코어 자바스크립트 저자 강의
             강의에 언급된 엣지 케이스들 외 주석들은 거의 대부분 본인 개인적인 지식과 생각에서 작성된 내용이다.
             */
-        } 
-        
+        }
+
         {
             // DATA TYPE
             /* 식별자와 데이터의 저장을 별개로 한다.
@@ -24,8 +24,8 @@
              원시형 데이터의 경우 실제 데이터가 저장된 메모리 주소를 식별자명과 함께 기록한다.
              참조형 데이터의 경우 참조형 데이터의 멤버들의 주소목록이 저장된다.
              */
-        } 
-        
+        }
+
         {
             // 실행문맥과 렉시컬 환경
             /*
@@ -50,8 +50,8 @@
             현재는 엔드포인트의 개발자에게 있어서 추상적인 개념일 뿐이므로
             개괄적으로만 코드의 흐름을 읽을 수 있을 정도로 익혀두는 것이 중요하다.
             */
-        } 
-        
+        }
+
         {
             // THIS
             /*
@@ -130,8 +130,8 @@
             div.addEventListener('click', function () {
                 console.log(this); // 클릭시 div element가 출력된다. currentTarget과 같다.
             });
-        } 
-        
+        }
+
         {
             // Callback Function
             /*
@@ -159,8 +159,8 @@
             };
 
             arr.forEach(obj.printValues); // obj.printValues는 메서드로써 전달되지 않는다. printValues라는 함수로써 전달될 뿐.
-        } 
-        
+        }
+
         {
             // CLOSURE
             /*
@@ -295,7 +295,7 @@
                     console.dir(arrLike); // Array(3)
                     console.log(arrLike); // [1, 2, 3] 출력
                 }
-                
+
                 {
                     // CLASS 문법을 사용할 경우 내부에 선언된 메서드들은 자동으로 prototype에 할당된다.
                     class A {
@@ -336,7 +336,61 @@
 
             {
                 // PROTOTYPE CHAIN과 상속
+                // 아래 두 개의 코드블록은 정확히 같은 역할을 수행한다.
 
+                {
+                    function Person(name) {
+                        this.name = name;
+                    }
+
+                    Person.prototype.sayName = function () {
+                        console.log(this.name);
+                    }
+
+                    function Employee(name, job) {
+                        // 부모 생성자 호출
+                        Person.call(this, name);
+
+                        // 본인 생성자 동작
+                        this.job = job;
+
+                        // this의 프로토타입을 부모의 것으로 변경
+                        Object.setPrototypeOf(
+                            this,
+                            Object.create(Person.prototype)
+                        );
+
+                        // constructor를 본인의 생성자 함수로 변경
+                        Object.getPrototypeOf(this).constructor = Employee;
+                    }
+
+                    const obj = new Employee("Joo", "Programmer");
+                    console.log(obj);
+                    obj.sayName();
+                }
+
+                {
+                    class Person {
+                        constructor(name) {
+                            this.name = name;
+                        }
+
+                        sayName() {
+                            console.log(this.name);
+                        }
+                    }
+
+                    class Employee extends Person {
+                        constructor(name, job) {
+                            super(name);
+                            this.job = job;
+                        }
+                    }
+
+                    const obj = new Employee("Joo", "Programmer");
+                    console.log(obj);
+                    obj.sayName()
+                }
             }
         }
     </script>
