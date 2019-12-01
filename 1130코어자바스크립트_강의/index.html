@@ -343,6 +343,8 @@
                         this.name = name;
                     }
 
+                    Person.staticMethod = () => console.log("I'm static method haha");
+
                     Person.prototype.sayName = function () {
                         console.log(this.name);
                     }
@@ -354,19 +356,18 @@
                         // 본인 생성자 동작
                         this.job = job;
 
-                        // this의 프로토타입을 부모의 것으로 변경
-                        Object.setPrototypeOf(
-                            this,
-                            Object.create(Person.prototype)
-                        );
+                        // 본인 프로토타입의 프로토타입을 Person의 프로토타입으로 설정.
+                        Object.setPrototypeOf(Employee.prototype, Person.prototype);
 
-                        // constructor를 본인의 생성자 함수로 변경
-                        Object.getPrototypeOf(this).constructor = Employee;
+                        // 정적 메서드 상속을 위한 생성자 함수의 프로토타입 설정.
+                        Object.setPrototypeOf(Employee, Person);
                     }
 
                     const obj = new Employee("Joo", "Programmer");
                     console.log(obj);
                     obj.sayName();
+
+                    Employee.staticMethod(); // 출력 : I'm static method haha
                 }
 
                 {
@@ -377,6 +378,10 @@
 
                         sayName() {
                             console.log(this.name);
+                        }
+
+                        static staticMethod() {
+                            console.log("I'm static method haha");
                         }
                     }
 
@@ -390,7 +395,118 @@
                     const obj = new Employee("Joo", "Programmer");
                     console.log(obj);
                     obj.sayName()
+
+                    Employee.staticMethod();
                 }
+            }
+            {
+                const parent = {
+                    parentMethodA() {
+                        console.log("parent");
+                    },
+                    parentMethodB: function () {
+                        console.log("parent");
+                    }
+                };
+
+                const obj1 = {
+                    __proto__: parent,
+                    method() {
+                        super.parentMethodA();
+                        super.parentMethodB();
+
+                        console.log(this); // 전역 객체 출력됨
+                    },
+                    notMethod: function () {
+                        // super 키워드를 사용할 수 없다.
+                        // super.parentMethodA();
+                        // super.parentMethodB();
+                    }
+                };
+
+                /*
+                super 키워드가 정상동작 안할 것 같지만,
+                [[HomeObject]] 라는 사양상의 내부 속성이(The Special internal property) bound된 상태로써,
+                아래와 같이 메서드만 추출하여도 this만 인지 못할 뿐 super는 정상 작동한다.
+
+                즉, 메서드 표기법 name() {...} 는 단순히 함수 속성 표기의 문법 설탕뿐이 아닌 것이다.
+                Methods, not function properties.
+                */
+                const extractA = obj1.method;
+                extractA();
+
+                /*
+                어떤 함수가 클래스나 객체의 메서드로써 지정될 시,
+                [[HomeObject]] 속성은 해당 클래스나 객체를 가르키게 된다.
+
+                super 키워드는 부모 프로토타입과 그것의 메서드를 확인하기 위해
+                이 [[HomeObject]] 속성을 활용합니다.
+                */
+            }
+            {
+                // class 키워드 또한 생성자 함수의 단순한 문법 설탕이 아니다.
+                class parent {
+                    constructor(name) {
+                        this.name = name;
+                    }
+
+                    sayHi() {
+                        console.log(`hello My name is ${this.name}`);
+                    }
+
+                    static staticMethod() {
+                        console.log("hahahaha");
+                    }
+                }
+
+                const justExpression = () => parent;
+
+                class child extends justExpression() { // 부모 클래스를 표현식으로 치환 가능
+                    sayHi() {
+                        super.sayHi();
+                        console.log("and I love you");
+                    }
+                }
+
+                const childObj = new child("joo");
+                childObj.sayHi();
+
+                /*
+                출력 :
+                hello My name is joo
+                and I love you
+                */
+
+                for (const key in childObj) {
+                    // name 밖에 출력하지 않는다.
+                    // 기본적으로 class 의 모든 메서드는 enumerable 플래그가 false로 세팅된다.
+                    console.log(">>>", key);
+                }
+
+                // class는 함수와 같이 표현식으로도 사용이 가능하다.
+                function makeOwnClass(method) {
+                    const result = class myClass extends justExpression() {
+                    };
+
+                    result.prototype[method.name] = method;
+
+                    return result;
+                }
+
+                // sayHello 메서드를 갖는 클래스를 동적으로 생성하였다.
+                const ownClass = makeOwnClass(
+                    function sayHello() {
+                        console.log(`hello ${this.name}`);
+                    }
+                );
+
+                const ownClassObj = new ownClass("joo");
+                ownClassObj.sayHello();
+                ownClassObj.sayHi();
+
+                ownClass.staticMethod(); // 정적 메서드도 상속이 된다.
+
+                console.dir(ownClass);
             }
         }
     </script>
